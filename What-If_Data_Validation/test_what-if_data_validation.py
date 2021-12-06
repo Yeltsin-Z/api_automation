@@ -4,7 +4,7 @@ import commons as cmn
 
 
 class TestWhatIfDataValidation(unittest.TestCase):
-    payload_data = "./test-automation/What-If_Data_Validation/payload_data.json"
+    payload_data = "./What-If_Data_Validation/payload_data.json"
     headers = {"Content-Type": "application/json", "apikey": "jPrpkogvVHeS2g2t8BgicjE5KVvzqYe3"}
 
     def test_scenario_1(self):
