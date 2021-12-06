@@ -1,11 +1,11 @@
 name: What-If Data Validation
 
 on:
-  schedule:
-    - cron: '0 0-23 * * *'
   push:
     branches:
       - master
+  schedule:
+    - cron: '0 0-23 * * *'
     
 jobs:
   build:
