@@ -1,0 +1,17 @@
+{
+  "test_scenario_3": {
+    "metricUpdates": [
+      {
+        "name": "metrics.Metric_1",
+        "overrides": [
+          {
+            "dimensions": [
+
+            ],
+            "value": "metrics.Metric_1 + 50"
+          }
+        ]
+      }
+    ]
+  }
+}
