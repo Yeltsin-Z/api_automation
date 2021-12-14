@@ -23,16 +23,27 @@ jobs:
     - name: Test with pytest
       run: |
         pip install pytest
-        pytest -v -s --html=report.html What-If_Data_Validation/test_what-if_data_validation.py
+        pytest -v -s --junitxml="report.xml" What-If_Data_Validation/test_what-if_data_validation.py
     
     - name: Upload Test Results
       if: always()
       uses: actions/upload-artifact@v2
       with:
           name: Test Results (Python ${{ matrix.python-version }})
-          path: report.html
-    
-    - name: Publish Test Results
+          path: report.xml
+  
+  publish-test-results:
+    name: "Publish Tests Results"
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: artifacts
+
+      - name: Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
-          files: artifacts/**/*.html
+          files: artifacts/**/*.xml
