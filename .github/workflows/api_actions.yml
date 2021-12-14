@@ -31,3 +31,8 @@ jobs:
       with:
           name: Test Results (Python ${{ matrix.python-version }})
           path: report.html
+    
+    - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        with:
+          files: artifacts/**/*.html
