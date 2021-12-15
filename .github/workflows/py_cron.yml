@@ -1,4 +1,4 @@
-name: What-If Data Validation
+name: What-If Cron Job
 
 on:
   schedule:
@@ -26,7 +26,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v2
       with:
-          name: Test Results (Python ${{ matrix.python-version }})
+          name: Test Results
           path: report.xml
   
   publish-test-results:
