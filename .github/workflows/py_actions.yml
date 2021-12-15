@@ -26,19 +26,24 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v2
       with:
-          name: Test Results (Python ${{ matrix.python-version }})
+          name: test-report
           path: report.xml
   
-  publish_unit_test:
+  publish-test-results:
       runs-on: ubuntu-latest
       needs: build
       if: success() || failure()
-      steps:  
-      - id: publish_unit_test        
-        name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        with:
-          files: artifacts/**/*.xml
+      
+      steps:
+        - name: Download Artifacts
+          uses: actions/download-artifact@v2
+          with:
+            path: artifacts
+
+        - name: Test Results
+          uses: EnricoMi/publish-unit-test-result-action@v1
+          with:
+            files: artifacts/test-report/report.xml
           
 #     - name: Test with pytest
 #       run: |
