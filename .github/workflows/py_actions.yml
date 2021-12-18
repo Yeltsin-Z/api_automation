@@ -54,3 +54,24 @@ jobs:
           uses: EnricoMi/publish-unit-test-result-action@v1.25
           with:
             files: artifacts/test-report/xml_report.xml
+  
+  slackNotification:
+    name: Slack Notification
+    runs-on: ubuntu-latest
+    needs: build
+    if: always()
+    
+    steps:
+      - uses: actions/checkout@v2
+      - name: Slack Notification
+        uses: partnerhero/action-webhook-slack-notify@v2.1.0
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEB_HOOK }}
+          SLACK_TITLE: Board API Suite Failed.
+          SLACK_MESSAGE: Some tests failed in Board API suite.
+          SLACK_USERNAME: SDET Bot
+          SLACK_CHANNEL: ask-sdet
+          SLACK_COLOR: '#3278BD'
+          SHOW_ACTIONS_URL: true
+          SHOW_REF: false
+          SHOW_EVENT: true
