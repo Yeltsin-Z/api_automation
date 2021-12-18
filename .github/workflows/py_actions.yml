@@ -22,14 +22,21 @@ jobs:
     - name: Test with pytest
       run: |
         pip install pytest
-        pytest -v -s --junitxml="report.xml" What-If_Data_Validation/test_what-if_data_validation.py
+        pytest -v -s --junitxml="xml_report.xml" --html="html_report.html" What-If_Data_Validation/test_what-if_data_validation.py
     
     - name: Upload Test Results
       if: always()
       uses: actions/upload-artifact@v2
       with:
           name: test-report
-          path: report.xml
+          path: xml_report.xml
+    
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+          name: test-report
+          path: html_report.html
   
   publish-test-results:
       runs-on: ubuntu-latest
@@ -46,4 +53,4 @@ jobs:
           if: always()
           uses: EnricoMi/publish-unit-test-result-action@v1.25
           with:
-            files: artifacts/test-report/report.xml
+            files: artifacts/test-report/xml_report.xml
