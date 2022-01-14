@@ -1,9 +1,13 @@
 name: What-If Data Validation
 
 on:
+  schedule:
+     - cron: '5 * * * *'
   push:
     branches:
       - master
+  
+    
 jobs:
   test:
     runs-on: ubuntu-latest
