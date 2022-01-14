@@ -1,72 +1,79 @@
+import json
 import unittest
-import api_client
-import commons as cmn
+import commons as cmn, api_client
 
 
-class TestWhatIfDataValidation(unittest.TestCase):
-    payload_data = "./What-If_Data_Validation/payload_data.json"
+class TestFormulaOrdering(unittest.TestCase):
     headers = {"Content-Type": "application/json", "apikey": "jPrpkogvVHeS2g2t8BgicjE5KVvzqYe3"}
+    create_model_payload_file = "./formula-ordering/payloads/create-model.json"
+    create_metric_payload_file = "./formula-ordering/payloads/create-metric.json"
+    add_formula_payload_file = "./formula-ordering/payloads/add-formula.json"
 
-    def test_scenario_1(self):
-        # Validating the Input Metrics / Plan Assumption Metrics
-        api_endpoint = "what-ifs/62"
-        q_params = {'f': ''}
-        request_data = cmn.get_input_data(self.payload_data, self._testMethodName)
+    def test_formula_ordering(self):
+        print("This is the test for formula Ordering Validation in DTML")
+        print("Creating a model .... ")
+        api_endpoint = "model/modules"
+        request_data = cmn.get_input_data(self.create_model_payload_file)
         api = api_client.ApiClient()
-        response = api.call(request_type="get", headers=self.headers,
-                            endpoint=api_endpoint, request_data=request_data, q_params=q_params)
-        print(response.status_code)
+        response, api_url = api.call(request_type="post", headers=self.headers,
+                                     endpoint=api_endpoint, request_data=request_data)
         assert response.status_code == 200
-        print(response.json())
-        assert "Metric_1" in response.json()['whatIf']['attributes']['inputMetrics'][0]
-        assert "Metric_2" in response.json()['whatIf']['attributes']['inputMetrics'][1]
+        print("\n", api_url)
+        print("\n Model created successfully..!!!")
 
-    def test_scenario_2(self):
-        # Validating the Target Metrics
-        api_endpoint = "what-ifs/63"
-        q_params = {'f': ''}
-        request_data = cmn.get_input_data(self.payload_data, self._testMethodName)
+        print("\n Creating a metric .... ")
+        api_endpoint = "model/modules/Formula_Ordering/metrics"
+        request_data = cmn.get_input_data(self.create_metric_payload_file)
         api = api_client.ApiClient()
-        response = api.call(request_type="get", headers=self.headers,
-                            endpoint=api_endpoint, request_data=request_data, q_params=q_params)
-        print(response.status_code)
+        response, api_url = api.call(request_type="post", headers=self.headers,
+                                     endpoint=api_endpoint, request_data=request_data)
         assert response.status_code == 200
-        print(response.json())
-        assert "Add_Metric" in response.json()['whatIf']['attributes']['targetMetrics'][0]
-        assert "Subtraction_Metric" in response.json()['whatIf']['attributes']['targetMetrics'][1]
-        assert "Mul_Metrics" in response.json()['whatIf']['attributes']['targetMetrics'][2]
-        assert "Div_Metrics" in response.json()['whatIf']['attributes']['targetMetrics'][3]
+        print("\n", api_url)
+        print("\n Metric created successfully..!!!")
 
-    def test_scenario_3(self):
-        # Update Metric_1 value by 50 and Validate the Response
-        api_endpoint = "what-ifs/63/update-metrics"
-        request_data = cmn.get_input_data(self.payload_data, self._testMethodName)
+        print("\n Creating formulas across Dimensions .... ")
+        api_endpoint = "model/modules/Formula_Ordering/metrics/metrics.formula_order_test?overwrite=true&rollup=MONTHLY,QUARTERLY,HALF_YEARLY,ANNUALLY"
+        request_data = cmn.get_input_data(self.add_formula_payload_file)
         api = api_client.ApiClient()
-        response = api.call(request_type="post", headers=self.headers,
-                            endpoint=api_endpoint, request_data=request_data)
-        print(response.status_code)
+        response, api_url = api.call(request_type="post", headers=self.headers,
+                                     endpoint=api_endpoint, request_data=request_data)
         assert response.status_code == 200
-        print(response.json())
-        api_endpoint = "what-ifs/63"
-        q_params = {'f': ''}
-        request_data = cmn.get_input_data(self.payload_data, self._testMethodName)
-        api = api_client.ApiClient()
-        response = api.call(request_type="get", headers=self.headers,
-                            endpoint=api_endpoint, request_data=request_data, q_params=q_params)
-        print(response.status_code)
-        assert response.status_code == 200
-        print(response.json())
-        assert response.json()['whatIf']['metrics'][2]['displayName'] == "Metric 1"
-        assert response.json()['whatIf']['metrics'][2]['data']['2022-11-01']['whatIf'] == 150.0
-        assert response.json()['whatIf']['metrics'][2]['data']['2022-08-01']['whatIf'] == 150.0
-        assert response.json()['whatIf']['metrics'][2]['data']['2021-12-01']['whatIf'] == 150.0
-        assert response.json()['whatIf']['metrics'][2]['data']['2022-10-01']['whatIf'] == 150.0
-        assert response.json()['whatIf']['metrics'][2]['data']['2022-02-01']['whatIf'] == 150.0
-        assert response.json()['whatIf']['metrics'][2]['data']['2022-03-01']['whatIf'] == 150.0
-        assert response.json()['whatIf']['metrics'][2]['data']['2022-01-01']['whatIf'] == 150.0
-        assert response.json()['whatIf']['metrics'][2]['data']['2022-05-01']['whatIf'] == 150.0
-        assert response.json()['whatIf']['metrics'][2]['data']['2022-04-01']['whatIf'] == 150.0
-        assert response.json()['whatIf']['metrics'][2]['data']['2022-09-01']['whatIf'] == 150.0
-        assert response.json()['whatIf']['metrics'][2]['data']['2022-07-01']['whatIf'] == 150.0
-        assert response.json()['whatIf']['metrics'][2]['data']['2022-06-01']['whatIf'] == 150.0
+        print("\n", api_url)
+        print("\nSuccessfully created formula for US ")
 
+        print("\nFetching DTML....")
+        api_endpoint = "dtmls/1"
+        api = api_client.ApiClient()
+        response, api_url = api.call(request_type="get", headers=self.headers,
+                                     endpoint=api_endpoint)
+        assert response.status_code == 200
+        print("\n", api_url)
+        print("\nParsing DTML data....")
+        dtml_data = response.json()['dtml']
+        parsed_dtml = json.loads(dtml_data)
+        for i in range(len(parsed_dtml['metrics'])):
+            if "formula_order_test" in parsed_dtml['metrics'][i]['name']:
+                self.assertEqual("metrics.formula_order_test[Country=US] = 20",
+                                 parsed_dtml['metrics'][i]['formulae'][0])
+                print("\nCheck 1 passed !")
+                self.assertEqual("metrics.formula_order_test[Country=Japan] = 50",
+                                 parsed_dtml['metrics'][i]['formulae'][1])
+                print("\nCheck 2 passed !")
+                self.assertEqual("metrics.formula_order_test[Country=ME] = 70",
+                                 parsed_dtml['metrics'][i]['formulae'][2])
+                print("\nCheck 3 passed !")
+                self.assertEqual("metrics.formula_order_test[Country=APAC] = 200",
+                                 parsed_dtml['metrics'][i]['formulae'][3])
+                print("\nCheck 4 passed !")
+                self.assertEqual("metrics.formula_order_test[Country=Canada] = 100",
+                                 parsed_dtml['metrics'][i]['formulae'][4])
+                print("\nCheck 5 passed !")
+
+        print("\nDeleting the model after test ...")
+        api_endpoint = "model/modules/Formula_Ordering"
+        api = api_client.ApiClient()
+        response, api_url = api.call(request_type="delete", headers=self.headers,
+                                     endpoint=api_endpoint, request_data=request_data)
+        assert response.status_code == 200
+        print("\n", api_url)
+        print("\n Model deleted successfully...!!!")
