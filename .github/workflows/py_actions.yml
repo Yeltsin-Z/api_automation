@@ -1,4 +1,4 @@
-name: What-If Data Validation
+name: UI Dimensions Validation
 
 on:
   push:
